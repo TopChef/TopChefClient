@@ -4,10 +4,8 @@ language: python
 
 cache: pip
 
-services:
-  - postgresql
-
 python:
+  - "2.5"
   - "2.6"
   - "2.7"
   - "3.5"
@@ -17,7 +15,6 @@ notifications:
 
 install:
   - pip install -r requirements.txt
-  - pip install psycopg2 # Postgres driver
 
 before_script:
 
