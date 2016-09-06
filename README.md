@@ -11,9 +11,9 @@ the [TopChef](https://github.com/TopChef/TopChef) API.
 )
 
 [![Requirements Status](
-https://requires.io/github/TopChef/TopChef/requirements.svg?branch=master
+https://requires.io/github/TopChef/TopChefClient/requirements.svg?branch=master
 )](
-https://requires.io/github/TopChef/TopChef/requirements/?branch=master)
+https://requires.io/github/TopChef/TopChefClient/requirements/?branch=master)
 
 ## Dependencies
 
