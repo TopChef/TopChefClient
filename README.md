@@ -10,6 +10,11 @@ the [TopChef](https://github.com/TopChef/TopChef) API.
     https://travis-ci.org/TopChef/TopChefClient
 )
 
+[![Requirements Status](
+https://requires.io/github/TopChef/TopChefClient/requirements.svg?branch=master
+)](
+https://requires.io/github/TopChef/TopChefClient/requirements/?branch=master)
+
 ## Dependencies
 
 The dependencies for this project are given in the ``requirements.txt`` file.
@@ -20,6 +25,15 @@ a Python 2 - Python 3 compatibility library. It makes creating
 [abstract base classes](https://docs.python.org/2/library/abc.html) much easier.
 
 Python versions greater than 2.6 are supported.
+
+## Project Management
+
+This project is managed on [Waffle IO](https://waffle.io/TopChef/TopChef).
+The team throughput is shown below
+
+[![Throughput Graph](
+    https://graphs.waffle.io/TopChef/TopChef/throughput.svg
+)](https://waffle.io/TopChef/TopChef/metrics/throughput)
 
 ## Installation
 
@@ -71,7 +85,7 @@ JSON schema we'll use for input is therefore
 
 ```json
     {
-        "type": "object"
+        "type": "object",
         "properties": 
         {
             "value": 
