@@ -85,7 +85,7 @@ JSON schema we'll use for input is therefore
 
 ```json
     {
-        "type": "object"
+        "type": "object",
         "properties": 
         {
             "value": 
