@@ -16,7 +16,7 @@ https://requires.io/github/TopChef/TopChefClient/requirements.svg?branch=master
 https://requires.io/github/TopChef/TopChefClient/requirements/?branch=master)
 
 
-[![Dcumentation Status](
+[![Documentation Status](
     https://readthedocs.org/projects/topchef-client/badge/?version=latest)](
     http://topchef-client.readthedocs.io/en/latest/?badge=latest)
                 
