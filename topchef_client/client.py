@@ -1,6 +1,19 @@
 """
-Contains a base class for a client capable of working with the TopChef
-client
+Contains a class that provides a method for working 
+
+In the context of the API, a service is a resource capable of polling the
+API, taking in a single JSON object corresponding to a schema, and returning
+a result which is a valid instance of a result schema. A job is a
+resource which contains a parameter dictionary satisfying the service schema.
+
+In order to use this client, :class:`Client` needs to be subclassed, and its
+:meth:`run` method needs to be implemented. The argument of :meth:`run`
+is guaranteed to satisfy the service's job registration schema. However, the
+onus is on the user to ensure that the return value satisfies the job result
+schema of the job's service.
+
+In accordance with the Python convention, properties and methods beginning 
+with ``_`` are private.
 """
 import threading
 import requests
@@ -10,24 +23,55 @@ import json
 import time
 
 class NetworkError(IOError, RuntimeError):
+    """
+    Thrown if the client is unable to connect to the server,
+    or recieves an unexpected response from the server.
+    """
     pass
 
 class ValidationError(ValueError):
+    """
+    Thrown if a JSON object does not conform to a required
+    JSON schema. This exception takes in the message and context
+    from the API.
+
+    :var str message: The message that the API returns from
+        validating the schema
+    :var [str] context: The context in which the error occurred
+    """
     def __init__(self, message, context, *args, **kwargs):
+        """
+        Instantiates the variables described above
+        """
         ValueError.__init__(self, *args, **kwargs)
         self.message = message
         self.context = context
 
     def __str__(self):
+        """
+        Returns a string representation of the exception
+        """
         return 'ValueError: message=%s, context=%s' % (
             self.message, self.context)
 
 class ProcessingError(RuntimeError):
+    """
+    Thrown if an error occurs while executing :meth:`run` in a processing
+    thread
+    """
     pass
 
 @six.add_metaclass(abc.ABCMeta)
 class Client(object):
+    """
+    Abstract base class that consumes the TopChef API, passes the parameters
+    to :meth:`run`, and returns the result to the server. The work is done
+    in a background thread. 
 
+    The main thread of the application checks if there are any jobs available
+    in a service's queue. If there are jobs available, it executes :meth:`run`
+    with the job's parameters.
+    """
     def __init__(self, address, service_id, timeout=30):
         """
         Initialize a client to listen on a server
@@ -55,6 +99,12 @@ class Client(object):
 
     @abc.abstractmethod
     def run(self, parameters):
+        """
+        Abstract method that should take in a dictionary of parameters and
+        return a valid dictionary.
+
+        :raises: :exc:`NotImplementedError` if the method is not subclassed
+        """
         raise NotImplementedError
     
     @classmethod
@@ -100,6 +150,13 @@ class Client(object):
 
     @property
     def is_server_alive(self):
+        """
+        Getter that returns True if the target server is up and running
+        
+        :return: ``True`` if a ``GET`` request to the API is successful
+            and ``False`` if not
+        :rtype: bool
+        """
         response = requests.get(
             self.address, headers={'Content-Type': 'application/json'}
         )
@@ -107,6 +164,17 @@ class Client(object):
 
     @staticmethod
     def _json_get(endpoint):
+        """
+        Obtain data from an endpoint and return the body of the request
+        as a dictionary. This dictionary is built from the request body's
+        JSON.
+
+        :param str endpoint: The URL from which data needs to be obtained
+        :return: The JSON from the endpoint
+        :rtype: dict
+        :raises: :exc:`NetworkError` if the response status code from
+            the request is not ``200``.
+        """
         response = requests.get(endpoint,
             headers={'Content-Type': 'application/json'}
         )
@@ -121,20 +189,47 @@ class Client(object):
 
     @property
     def _service_details(self):
+        """
+        Returns the dictionary containing the details for the current
+        service to which this client is bound.
+
+        :return: The details for a service
+        :rtype: dict
+        """
         endpoint = '%s/services/%s' % (self.address, self.id)
         response = self._json_get(endpoint)
         return response['data']
         
     @property
     def job_registration_schema(self):
+        """
+        Returns the job registration schema
+
+        :return: The schema that must be satisfied for a job to be
+            registered
+        :rtype: dict
+        """
         return self._service_details['job_registration_schema']
 
     @property
     def job_result_schema(self):
+        """
+        Returns the schema that must be satisfied for a result to be
+        posted
+
+        :return: The job result schema
+        :rtype: dict
+        """
         return self._service_details['job_result_schema']
 
     @property
     def _first_job_id_in_queue(self):
+        """
+        Returns the first ID of a job in the queue
+
+        :return: The ID of the first job in the queue
+        :rtype: str
+        """
         queue_endpoint = '%s/services/%s/queue' % (self.address, self.id)
 
         job_id = self._json_get(queue_endpoint)['data'][0]['id']
@@ -143,6 +238,12 @@ class Client(object):
 
     @property
     def current_job(self):
+        """
+        Returns the current job that is to be worked on
+
+        :return: A job that must be processed
+        :rtype: _Job
+        """
         job_id = self._first_job_id_in_queue
         
         endpoint = '%s/jobs/%s' % (self.address, job_id)
@@ -153,6 +254,9 @@ class Client(object):
 
     @property
     def is_queue_empty(self):
+        """
+        Returns ``True`` if the service's queue is empty and ``False`` if not.
+        """
         queue_endpoint = '%s/services/%s/queue' % (self.address, self.id)
 
         data = self._json_get(queue_endpoint)['data']
@@ -164,6 +268,11 @@ class Client(object):
         """
         Send a PATCH request to the server to let the server know
         that this class still exists and is accepting jobs
+
+        :param str address: The address that must be patched
+        :param str service_id: The ID of the service that must be
+            ``PATCH``ed
+        :raises: :exc:`NetworkError` if the site cannot be ``PATCH``ed
         """
         endpoint = '%s/services/%s' % (address, service_id)
 
@@ -197,6 +306,11 @@ class Client(object):
             else: self.run_iteration()
 
     def run_iteration(self):
+        """
+        Run a single iteration of the processing loop. This is exposed to
+        enable packaging of the Client's main loop in a more elaborate
+        multitasking system.
+        """
         parameters = self.current_job['parameters']
         
         try:
@@ -226,7 +340,11 @@ class Client(object):
 
     def start(self, should_poll=True):
         """
-        Start the client's main processing loop. Start a polling loop in a separate thread
+        Start the client's main processing loop. Start a polling loop 
+        in a separate thread
+        
+        :param bool should_poll: If true, then the polling thread will be
+            started along with the processing thread
         """
         if should_poll: self.polling_thread.start()
         self.processing_thread.start()
@@ -235,6 +353,14 @@ class Client(object):
         """
         POST to the API to check if a dictionary instance
         is a valid instance of the provided schema
+
+        :param dict instance: The object that must be validated
+        :param dict schema: The schema against which the instance
+            is to be validated
+        :raises: :exc:`ValidationError` if ``instance`` does not
+            validate against ``schema``
+        :raises: :exc:`NetworkError` if a connection cannot be made
+            to the validator endpoint
         """
         endpoint = '%s/validator' % self.address
 
@@ -253,23 +379,58 @@ class Client(object):
 
 
 class _Job(object):
+    """
+    A private representation of a TopChef job. This class is used
+    as an adapter to make business logic clearer in client definitions.
+
+    :var str address: The base address of the TopChef server.
+    :var dict job_dict: A dictionary representing the details of the job
+    """
     def __init__(self, address, job_dict):
+        """
+        Instantiates the variables listed in the class description
+        """
         self.address = address
         self._job_dict = job_dict
 
     def __getitem__(self, item):
+        """
+        Returns the corresponding entry from this job's :var:`job_dict`
+
+        :param str item: The key from the job dict that must be obtained
+        :return: the entry from the dictionary
+        """
         return self._job_dict[item]
 
     @property
     def id(self):
+        """
+        Returns the job id
+
+        :returns: the Job ID
+        :rtype: str
+        """
         return self._job_dict['id']
 
     @property
     def status(self):
+        """
+        Returns the job status
+        
+        :return: The job status
+        :rtype: str
+        """
         return self._job_dict['status']
 
     @status.setter
     def status(self, new_status):
+        """
+        Set a new status. Ensures that it is a valid job status prior
+        to updating
+
+        :param str new_status: The new status to set
+        :raises: :exc:`ValueError` if the status is invalid
+        """
         if new_status not in ["REGISTERED", "WORKING", "COMPLETED"]:
             raise ValueError(
                 "The status must be one of 'REGISTERED', 'WORKING', or "\
@@ -282,15 +443,31 @@ class _Job(object):
    
     @property
     def result(self):
+        """
+        Returns the job result
+        """
         return self._job_dict['result']
 
     @result.setter
     def result(self, result):
-        self._job_dict['result'] = result
+        """
+        Sets the new job result and updates the job. No
+        validation is done here as it is assumed that the service
+        using this :class:`_Job` has already perfored the 
+        required validation
 
+        :param dict result: The new result to set
+        """
+        self._job_dict['result'] = result
         self._update()
 
     def _update(self):
+        """
+        Send a ``PUT`` request to the server with the updated
+        job data
+
+        :raises: :exc:`NetworkError` if the update was not successful
+        """
         endpoint = '%s/jobs/%s' % (self.address, self.id)
 
         response = requests.put(endpoint,
