@@ -15,6 +15,12 @@ https://requires.io/github/TopChef/TopChefClient/requirements.svg?branch=master
 )](
 https://requires.io/github/TopChef/TopChefClient/requirements/?branch=master)
 
+
+[![Dcumentation Status](
+    https://readthedocs.org/projects/topchef-client/badge/?version=latest)](
+    http://topchef-client.readthedocs.io/en/latest/?badge=latest)
+                
+
 ## Dependencies
 
 The dependencies for this project are given in the ``requirements.txt`` file.
