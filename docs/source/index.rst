@@ -9,8 +9,9 @@ Welcome to TopChef Client's documentation!
 Contents:
 
 .. toctree::
-   :maxdepth: 2
-
+   :maxdepth: 2   
+    
+   API
 
 
 Indices and tables
