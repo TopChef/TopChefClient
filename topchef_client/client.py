@@ -22,12 +22,14 @@ import six
 import json
 import time
 
+
 class NetworkError(IOError, RuntimeError):
     """
     Thrown if the client is unable to connect to the server,
     or recieves an unexpected response from the server.
     """
     pass
+
 
 class ValidationError(ValueError):
     """
@@ -54,12 +56,14 @@ class ValidationError(ValueError):
         return 'ValueError: message=%s, context=%s' % (
             self.message, self.context)
 
+
 class ProcessingError(RuntimeError):
     """
     Thrown if an error occurs while executing :meth:`run` in a processing
     thread
     """
     pass
+
 
 @six.add_metaclass(abc.ABCMeta)
 class Client(object):
@@ -92,7 +96,7 @@ class Client(object):
         self.timeout = timeout
         
         self.polling_thread = threading.Thread(target=self._polling_loop)
-        self.polling_thread.daemon = True # In these Daemon Days ...
+        self.polling_thread.daemon = True  # In these Daemon Days ...
 
         self.processing_thread = threading.Thread(target=self._processing_loop)
         self.processing_thread.daemon = True
@@ -110,7 +114,7 @@ class Client(object):
     @classmethod
     def new_service(cls, 
         address, name, description, job_registration_schema,
-        job_result_schema={'type':'object'}
+        job_result_schema={'type': 'object'}
     ):
         """
         Create a new service and bind the client to accept jobs
@@ -128,7 +132,9 @@ class Client(object):
             is ``{"type": "object"}``, meaning it matches all possible
             objects.
         """
-        data_to_post = {'description': description, 'name': name,
+        data_to_post = {
+            'description': description,
+            'name': name,
             'job_registration_schema': job_registration_schema,
             'job_result_schema': job_result_schema}
 
