@@ -21,6 +21,7 @@ import abc
 import six
 import json
 import time
+from .exceptions import NetworkError, ProcessingError, ValidationError
 
 
 @six.add_metaclass(abc.ABCMeta)
@@ -295,7 +296,7 @@ class Client(object):
         except ValidationError:
             raise ProcessingError(
                 'Unable to validate result %s against schema %s' % (
-                    result, self.job_result_schema
+                    results, self.job_result_schema
                 )
             )
 
