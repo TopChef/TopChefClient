@@ -1,4 +1,3 @@
-from collections import namedtuple
 from topchef_client import Client, NetworkError, ValidationError
 from topchef_client import ProcessingError
 from topchef_client.client import _Job
@@ -8,6 +7,7 @@ import mock
 ADDRESS = 'localhost'
 SERVICE_ID = 'a5b00b5a-6c8b-11e6-b090-843a4b768af4'
 
+
 class ClientForTesting(Client):
     """
     A simple test client that implements the abstract
@@ -15,6 +15,7 @@ class ClientForTesting(Client):
     """
     def run(self, parameters):
         return parameters
+
 
 @mock.patch('threading.Thread')
 class TestClientConstructor(object):
@@ -38,6 +39,7 @@ class TestClientConstructor(object):
             mock.call(target=client._processing_loop)
         ]
 
+
 def make_mock_response(json_data, status_code):
     class _MockResponse(object):
         def __init__(self, json_data, status_code):
@@ -49,9 +51,11 @@ def make_mock_response(json_data, status_code):
 
     return _MockResponse(json_data, status_code)
 
+
 @pytest.fixture
 def client():
     return ClientForTesting(ADDRESS, SERVICE_ID)
+
 
 class TestNewService(object):
     DESCRIPTION = "Service for Unit testing"
@@ -87,6 +91,7 @@ class TestNewService(object):
 
         assert mock_post.called
 
+
 class TestIsServerAlive(object):
 
     @mock.patch('requests.get', return_value=make_mock_response({}, 200))
@@ -99,6 +104,7 @@ class TestIsServerAlive(object):
     def test_is_server_alive_false(self, mock_get, client):
         assert not client.is_server_alive
         assert mock_get.called
+
 
 class TestJsonGet(object):
     endpoint = 'http://testing/endpoint'
@@ -117,6 +123,7 @@ class TestJsonGet(object):
         with pytest.raises(NetworkError):
             client._json_get(self.endpoint)
 
+
 class TestServiceDetails(object):
 
     @mock.patch('requests.get', return_value=make_mock_response(
@@ -125,9 +132,10 @@ class TestServiceDetails(object):
         expected_data = 'foo'
         assert expected_data == client._service_details
 
+
 @pytest.fixture
 def schema():
-    SCHEMA = {
+    return {
         'type': 'object',
         'properties': {
             'value': {
@@ -136,7 +144,6 @@ def schema():
         }
     }
 
-    return SCHEMA
 
 class TestJobRegistrationSchema(object):
 
@@ -160,6 +167,7 @@ class TestJobResultSchema(object):
         ):
             assert schema == client.job_result_schema
 
+
 class TestFirstJobIDInQueue(object):
     def test_first_id(self, client):
         server_response = {
@@ -170,6 +178,7 @@ class TestFirstJobIDInQueue(object):
             return_value=make_mock_response(server_response, 200)
         ):
             assert SERVICE_ID == client._first_job_id_in_queue
+
 
 class TestCurrentJob(object):
 
@@ -186,6 +195,7 @@ class TestCurrentJob(object):
         assert isinstance(job, _Job)
         assert job.address == client.address
 
+
 class TestIsQueueEmpty(object):
     
     @mock.patch('requests.get', return_value=make_mock_response(
@@ -201,6 +211,7 @@ class TestIsQueueEmpty(object):
     def test_is_queue_empty_false(self, mock_get, client):
         assert not client.is_queue_empty
         assert mock_get.called
+
 
 class TestCheckinToServer(object):
 
