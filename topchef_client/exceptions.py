@@ -46,3 +46,9 @@ class ProcessingError(RuntimeError):
     pass
 
 
+class ServiceNotFoundError(KeyError, NetworkError):
+    """
+    Thrown if the client attempts to locate a service, but that service does
+    not exist
+    """
+    pass

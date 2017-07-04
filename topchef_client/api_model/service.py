@@ -37,6 +37,19 @@ class Service(object):
         return '{0}/services/{1}'.format(self.topchef_url, self.service_id)
 
     @property
+    def does_service_exist(self):
+        """
+
+        :return: A boolean that is true if the service exists. A sufficient
+        condition for existence of the service is if the GET request to the
+        service endpoint returns the OK status code
+        """
+        response = self._http_library.get(
+            self._service_endpoint, headers=self._JSON_header
+        )
+        return response.status_code == self.HTTP_STATUS_CODE_OK
+
+    @property
     def new_job_endpoint(self):
         return '{0}/services/{1}/jobs'.format(
             self.topchef_url, self.service_id
