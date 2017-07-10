@@ -53,6 +53,10 @@ class Job(object):
         self.job_details = job_details
 
     @property
+    def status(self):
+        return self.job_details['status']
+
+    @property
     def job_details(self):
         """
 

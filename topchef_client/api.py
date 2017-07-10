@@ -48,6 +48,8 @@ class _TopChefServicesGetter(object):
         if not service.does_service_exist:
             self._handle_nonexistent_service(service)
 
+        return service
+
     def _handle_nonexistent_service(self, service):
         """
 
@@ -56,6 +58,6 @@ class _TopChefServicesGetter(object):
         """
         raise ServiceNotFoundError(
             "A service with UUID %s does not exist at URL %s" % (
-                service, self.url
+                service.service_id, self.url
             )
         )

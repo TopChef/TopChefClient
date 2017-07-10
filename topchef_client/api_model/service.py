@@ -130,3 +130,9 @@ class Service(object):
             'Attempting to create job returned unexpected status code %s' %
             status_code
         )
+
+    def __repr__(self):
+        return '<%s(service_id=%s, topchef_url=%s, http_library=%s)>' % (
+            self.__class__.__name__, self.service_id, self.topchef_url,
+            self._http_library
+        )

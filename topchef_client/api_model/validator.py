@@ -69,6 +69,10 @@ class Validator(object):
         """
         Perfoms validation remotely using the TopChef API
         """
+        _JSON_header = {'Content-Type': 'application/json'}
+        HTTP_STATUS_CODE_OK = 200
+        HTTP_STATUS_CODE_BAD_REQUEST = 400
+
         def __init__(self, topchef_url, http_library=requests):
             """
             
@@ -84,7 +88,7 @@ class Validator(object):
 
             :return: The URL for the JSON schema validator
             """
-            return '{0}/validator'.format(self._topchef_url)
+            return '{0}/validator'.format(self.topchef_url)
 
         def does_instance_match_schema(self, instance, schema):
             """
