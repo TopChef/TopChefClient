@@ -1,6 +1,6 @@
-from topchef_client import Client, NetworkError, ValidationError
+from topchef_client import ServiceListener, NetworkError, ValidationError
 from topchef_client import ProcessingError
-from topchef_client.client import _Job
+from topchef_client.service_listener import _Job
 import pytest
 import mock
 
@@ -8,7 +8,7 @@ ADDRESS = 'localhost'
 SERVICE_ID = 'a5b00b5a-6c8b-11e6-b090-843a4b768af4'
 
 
-class ClientForTesting(Client):
+class ServiceListenerForTesting(ServiceListener):
     """
     A simple test client that implements the abstract
     client for contacting the topchef server
@@ -22,12 +22,12 @@ class TestClientConstructor(object):
     
     def test_is_client_abstract(self, mock_thread):
         with pytest.raises(TypeError):
-            Client(ADDRESS, SERVICE_ID)
+            ServiceListener(ADDRESS, SERVICE_ID)
         
         assert not mock_thread.called
 
     def test_constructor_happy_path(self, mock_thread):
-        client = ClientForTesting(ADDRESS, SERVICE_ID)
+        client = ServiceListenerForTesting(ADDRESS, SERVICE_ID)
 
         assert client.id == SERVICE_ID
         assert client.address == ADDRESS
@@ -54,7 +54,7 @@ def make_mock_response(json_data, status_code):
 
 @pytest.fixture
 def client():
-    return ClientForTesting(ADDRESS, SERVICE_ID)
+    return ServiceListenerForTesting(ADDRESS, SERVICE_ID)
 
 
 class TestNewService(object):

@@ -3,14 +3,14 @@ Contains unit tests for :mod:`topchef_client.api_model.job`
 """
 import unittest
 import requests
-from topchef_client.api_model.job import Job
+from topchef_client.models.job import Job
 from uuid import uuid4
 from mock import MagicMock, call
 
 
 class TestJob(unittest.TestCase):
     """
-    Base class for unit tests of :mod:`topchef_client.api_model.job`
+    Base class for unit tests of :mod:`topchef_client.models.job`
     """
     def setUp(self):
         self.http_library = MagicMock(spec=requests)
@@ -32,7 +32,7 @@ class TestJob(unittest.TestCase):
 
 class TestResult(TestJob):
     """
-    Contains unit tests for :meth:`topchef_client.api_model.job.Job.result
+    Contains unit tests for :meth:`topchef_client.models.job.Job.result
     """
     JSON_headers = {'Content-Type': 'application/json'}
 

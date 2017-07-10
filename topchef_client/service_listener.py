@@ -25,7 +25,7 @@ from .exceptions import NetworkError, ProcessingError, ValidationError
 
 
 @six.add_metaclass(abc.ABCMeta)
-class Client(object):
+class ServiceListener(object):
     """
     Abstract base class that consumes the TopChef API, passes the parameters
     to :meth:`run`, and returns the result to the server. The work is done
@@ -347,20 +347,20 @@ class _Job(object):
     """
     A private representation of a TopChef job. This class is used
     as an adapter to make business logic clearer in client definitions.
-
-    :var str address: The base address of the TopChef server.
-    :var dict job_dict: A dictionary representing the details of the job
     """
     def __init__(self, address, job_dict):
         """
         Instantiates the variables listed in the class description
+
+        :param str address: The base address of the TopChef server.
+        :param dict job_dict: A dictionary representing the details of the job
         """
         self.address = address
         self._job_dict = job_dict
 
     def __getitem__(self, item):
         """
-        Returns the corresponding entry from this job's :var:`job_dict`
+        Returns the corresponding entry from this job's ``job_dict``
 
         :param str item: The key from the job dict that must be obtained
         :return: the entry from the dictionary

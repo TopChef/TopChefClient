@@ -5,7 +5,7 @@ import requests
 from unittest import TestCase
 from mock import MagicMock, call
 from uuid import uuid4
-from topchef_client.api_model.service import Service
+from topchef_client.models.service import Service
 
 
 class TestService(TestCase):
