@@ -183,7 +183,9 @@ class TestFirstJobIDInQueue(object):
 class TestCurrentJob(object):
 
     @mock.patch('requests.get')
-    @mock.patch('topchef_client.Client._first_job_id_in_queue',
+    @mock.patch(
+        'topchef_client.service_listener.ServiceListener'
+        '._first_job_id_in_queue',
         new_callable=mock.PropertyMock, return_value=SERVICE_ID)
     def test_current_job(self, mock_first_id, mock_get, client):
         mock_get.return_value = make_mock_response(
