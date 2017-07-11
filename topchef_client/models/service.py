@@ -3,7 +3,7 @@ Describes a TopChef service
 """
 import requests
 from topchef_client.exceptions import NetworkError
-from topchef_client.api_model.validator import Validator
+from topchef_client.models.validator import Validator
 from .job import Job
 
 

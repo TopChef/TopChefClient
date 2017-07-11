@@ -6,7 +6,7 @@ import requests
 from mock import MagicMock
 from uuid import uuid4
 from topchef_client.exceptions import ProcessingError
-from topchef_client.api_model.validator import Validator
+from topchef_client.models.validator import Validator
 
 
 class TestValidator(unittest.TestCase):

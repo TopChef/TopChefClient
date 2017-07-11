@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='topchef_client',
-    version='0.1',
+    version='0.2',
     description='Python library for interfacing with the TopChef server',
     author='Michal Kononenko',
     author_email='mkononen@uwaterloo.ca',
