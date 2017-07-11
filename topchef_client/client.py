@@ -21,45 +21,8 @@ import abc
 import six
 import json
 import time
+from .exceptions import NetworkError, ProcessingError, ValidationError
 
-class NetworkError(IOError, RuntimeError):
-    """
-    Thrown if the client is unable to connect to the server,
-    or recieves an unexpected response from the server.
-    """
-    pass
-
-class ValidationError(ValueError):
-    """
-    Thrown if a JSON object does not conform to a required
-    JSON schema. This exception takes in the message and context
-    from the API.
-
-    :var str message: The message that the API returns from
-        validating the schema
-    :var [str] context: The context in which the error occurred
-    """
-    def __init__(self, message, context, *args, **kwargs):
-        """
-        Instantiates the variables described above
-        """
-        ValueError.__init__(self, *args, **kwargs)
-        self.message = message
-        self.context = context
-
-    def __str__(self):
-        """
-        Returns a string representation of the exception
-        """
-        return 'ValueError: message=%s, context=%s' % (
-            self.message, self.context)
-
-class ProcessingError(RuntimeError):
-    """
-    Thrown if an error occurs while executing :meth:`run` in a processing
-    thread
-    """
-    pass
 
 @six.add_metaclass(abc.ABCMeta)
 class Client(object):
@@ -92,7 +55,7 @@ class Client(object):
         self.timeout = timeout
         
         self.polling_thread = threading.Thread(target=self._polling_loop)
-        self.polling_thread.daemon = True # In these Daemon Days ...
+        self.polling_thread.daemon = True  # In these Daemon Days ...
 
         self.processing_thread = threading.Thread(target=self._processing_loop)
         self.processing_thread.daemon = True
@@ -110,7 +73,7 @@ class Client(object):
     @classmethod
     def new_service(cls, 
         address, name, description, job_registration_schema,
-        job_result_schema={'type':'object'}
+        job_result_schema={'type': 'object'}
     ):
         """
         Create a new service and bind the client to accept jobs
@@ -128,7 +91,9 @@ class Client(object):
             is ``{"type": "object"}``, meaning it matches all possible
             objects.
         """
-        data_to_post = {'description': description, 'name': name,
+        data_to_post = {
+            'description': description,
+            'name': name,
             'job_registration_schema': job_registration_schema,
             'job_result_schema': job_result_schema}
 
@@ -331,7 +296,7 @@ class Client(object):
         except ValidationError:
             raise ProcessingError(
                 'Unable to validate result %s against schema %s' % (
-                    result, self.job_result_schema
+                    results, self.job_result_schema
                 )
             )
 
