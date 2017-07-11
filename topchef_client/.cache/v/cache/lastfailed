@@ -1,3 +1,0 @@
-{
-  "tests/integration/test_client_integration.py::TestJobResultSchema::()::test_result_schema": true
-}
