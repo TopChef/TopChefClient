@@ -25,6 +25,10 @@ class Job(object):
         self.job_id = job_id
 
     @property
+    def is_complete(self):
+        return self.status == u'COMPLETED'
+
+    @property
     def job_details_endpoint(self):
         """
 
