@@ -5,3 +5,4 @@ from .service_listener import ServiceListener
 from .exceptions import NetworkError, ValidationError, ProcessingError
 from .exceptions import ServiceNotFoundError
 from .api import Client
+from .models import Service, Job

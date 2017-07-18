@@ -4,3 +4,5 @@ interactions between objects in the API, and map onto the resource
 representations presented by the API. These representations allow
 representational state transfer.
 """
+from .service import Service
+from .job import Job
