@@ -82,7 +82,7 @@ class Job(object):
 
         :param new_job_details: The new job details
         """
-        response = self._http_library.put(
+        response = self._http_library.patch(
             self.job_details_endpoint, headers=self._JSON_header,
             json=new_job_details
         )
