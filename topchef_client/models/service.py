@@ -88,7 +88,7 @@ class Service(object):
         if new_job_response.status_code != self.HTTP_STATUS_CODE_CREATED:
             self._handle_job_not_created_error(new_job_response.status_code)
 
-        new_job_id = new_job_response.json()['data']['job_details']['id']
+        new_job_id = new_job_response.json()['data']['id']
 
         return Job(self.topchef_url, new_job_id, self._http_library)
 
