@@ -43,7 +43,7 @@ class Job(object):
         :return: The result for the job
         :rtype: object
         """
-        return self.job_details['result']
+        return self.job_details['results']
 
     @result.setter
     def result(self, new_result):
